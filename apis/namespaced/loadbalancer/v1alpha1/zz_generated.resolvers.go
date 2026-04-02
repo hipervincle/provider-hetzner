@@ -15,8 +15,75 @@ import (
 	client "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// ResolveReferences of this BalancerNetwork.
-func (mg *BalancerNetwork) ResolveReferences(ctx context.Context, c client.Reader) error {
+// ResolveReferences of this LoadBalancerService.
+func (mg *LoadBalancerService) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPINamespacedResolver(c, mg)
+
+	var rsp reference.NamespacedResolutionResponse
+	var mrsp reference.MultiNamespacedResolutionResponse
+	var err error
+
+	for i3 := 0; i3 < len(mg.Spec.ForProvider.HTTP); i3++ {
+		mrsp, err = r.ResolveMultiple(ctx, reference.MultiNamespacedResolutionRequest{
+			CurrentValues: reference.FromFloatPtrValues(mg.Spec.ForProvider.HTTP[i3].Certificates),
+			Extract:       reference.ExternalName(),
+			Namespace:     mg.GetNamespace(),
+			References:    mg.Spec.ForProvider.HTTP[i3].CertificatesRefs,
+			Selector:      mg.Spec.ForProvider.HTTP[i3].CertificatesSelector,
+			To: reference.To{
+				List:    &v1alpha1.ManagedCertificateList{},
+				Managed: &v1alpha1.ManagedCertificate{},
+			},
+		})
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.ForProvider.HTTP[i3].Certificates")
+		}
+		mg.Spec.ForProvider.HTTP[i3].Certificates = reference.ToFloatPtrValues(mrsp.ResolvedValues)
+		mg.Spec.ForProvider.HTTP[i3].CertificatesRefs = mrsp.ResolvedReferences
+
+	}
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.LoadBalancerID),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.LoadBalancerIDRef,
+		Selector:     mg.Spec.ForProvider.LoadBalancerIDSelector,
+		To: reference.To{
+			List:    &LoadBalancerList{},
+			Managed: &LoadBalancer{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.LoadBalancerID")
+	}
+	mg.Spec.ForProvider.LoadBalancerID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.LoadBalancerIDRef = rsp.ResolvedReference
+
+	for i3 := 0; i3 < len(mg.Spec.InitProvider.HTTP); i3++ {
+		mrsp, err = r.ResolveMultiple(ctx, reference.MultiNamespacedResolutionRequest{
+			CurrentValues: reference.FromFloatPtrValues(mg.Spec.InitProvider.HTTP[i3].Certificates),
+			Extract:       reference.ExternalName(),
+			Namespace:     mg.GetNamespace(),
+			References:    mg.Spec.InitProvider.HTTP[i3].CertificatesRefs,
+			Selector:      mg.Spec.InitProvider.HTTP[i3].CertificatesSelector,
+			To: reference.To{
+				List:    &v1alpha1.ManagedCertificateList{},
+				Managed: &v1alpha1.ManagedCertificate{},
+			},
+		})
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.InitProvider.HTTP[i3].Certificates")
+		}
+		mg.Spec.InitProvider.HTTP[i3].Certificates = reference.ToFloatPtrValues(mrsp.ResolvedValues)
+		mg.Spec.InitProvider.HTTP[i3].CertificatesRefs = mrsp.ResolvedReferences
+
+	}
+
+	return nil
+}
+
+// ResolveReferences of this LoadBalancerTarget.
+func (mg *LoadBalancerTarget) ResolveReferences(ctx context.Context, c client.Reader) error {
 	r := reference.NewAPINamespacedResolver(c, mg)
 
 	var rsp reference.NamespacedResolutionResponse
@@ -29,8 +96,52 @@ func (mg *BalancerNetwork) ResolveReferences(ctx context.Context, c client.Reade
 		Reference:    mg.Spec.ForProvider.LoadBalancerIDRef,
 		Selector:     mg.Spec.ForProvider.LoadBalancerIDSelector,
 		To: reference.To{
-			List:    &BalancerList{},
-			Managed: &Balancer{},
+			List:    &LoadBalancerList{},
+			Managed: &LoadBalancer{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.LoadBalancerID")
+	}
+	mg.Spec.ForProvider.LoadBalancerID = reference.ToFloatPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.LoadBalancerIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromFloatPtrValue(mg.Spec.ForProvider.ServerID),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.ServerIDRef,
+		Selector:     mg.Spec.ForProvider.ServerIDSelector,
+		To: reference.To{
+			List:    &v1alpha11.ServerList{},
+			Managed: &v1alpha11.Server{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.ServerID")
+	}
+	mg.Spec.ForProvider.ServerID = reference.ToFloatPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.ServerIDRef = rsp.ResolvedReference
+
+	return nil
+}
+
+// ResolveReferences of this NetworkAttachment.
+func (mg *NetworkAttachment) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPINamespacedResolver(c, mg)
+
+	var rsp reference.NamespacedResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromFloatPtrValue(mg.Spec.ForProvider.LoadBalancerID),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.LoadBalancerIDRef,
+		Selector:     mg.Spec.ForProvider.LoadBalancerIDSelector,
+		To: reference.To{
+			List:    &LoadBalancerList{},
+			Managed: &LoadBalancer{},
 		},
 	})
 	if err != nil {
@@ -89,77 +200,6 @@ func (mg *BalancerNetwork) ResolveReferences(ctx context.Context, c client.Reade
 	}
 	mg.Spec.InitProvider.SubnetID = reference.ToPtrValue(rsp.ResolvedValue)
 	mg.Spec.InitProvider.SubnetIDRef = rsp.ResolvedReference
-
-	return nil
-}
-
-// ResolveReferences of this BalancerService.
-func (mg *BalancerService) ResolveReferences(ctx context.Context, c client.Reader) error {
-	r := reference.NewAPINamespacedResolver(c, mg)
-
-	var rsp reference.NamespacedResolutionResponse
-	var err error
-
-	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
-		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.LoadBalancerID),
-		Extract:      reference.ExternalName(),
-		Namespace:    mg.GetNamespace(),
-		Reference:    mg.Spec.ForProvider.LoadBalancerIDRef,
-		Selector:     mg.Spec.ForProvider.LoadBalancerIDSelector,
-		To: reference.To{
-			List:    &BalancerList{},
-			Managed: &Balancer{},
-		},
-	})
-	if err != nil {
-		return errors.Wrap(err, "mg.Spec.ForProvider.LoadBalancerID")
-	}
-	mg.Spec.ForProvider.LoadBalancerID = reference.ToPtrValue(rsp.ResolvedValue)
-	mg.Spec.ForProvider.LoadBalancerIDRef = rsp.ResolvedReference
-
-	return nil
-}
-
-// ResolveReferences of this BalancerTarget.
-func (mg *BalancerTarget) ResolveReferences(ctx context.Context, c client.Reader) error {
-	r := reference.NewAPINamespacedResolver(c, mg)
-
-	var rsp reference.NamespacedResolutionResponse
-	var err error
-
-	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
-		CurrentValue: reference.FromFloatPtrValue(mg.Spec.ForProvider.LoadBalancerID),
-		Extract:      reference.ExternalName(),
-		Namespace:    mg.GetNamespace(),
-		Reference:    mg.Spec.ForProvider.LoadBalancerIDRef,
-		Selector:     mg.Spec.ForProvider.LoadBalancerIDSelector,
-		To: reference.To{
-			List:    &BalancerList{},
-			Managed: &Balancer{},
-		},
-	})
-	if err != nil {
-		return errors.Wrap(err, "mg.Spec.ForProvider.LoadBalancerID")
-	}
-	mg.Spec.ForProvider.LoadBalancerID = reference.ToFloatPtrValue(rsp.ResolvedValue)
-	mg.Spec.ForProvider.LoadBalancerIDRef = rsp.ResolvedReference
-
-	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
-		CurrentValue: reference.FromFloatPtrValue(mg.Spec.ForProvider.ServerID),
-		Extract:      reference.ExternalName(),
-		Namespace:    mg.GetNamespace(),
-		Reference:    mg.Spec.ForProvider.ServerIDRef,
-		Selector:     mg.Spec.ForProvider.ServerIDSelector,
-		To: reference.To{
-			List:    &v1alpha11.ServerList{},
-			Managed: &v1alpha11.Server{},
-		},
-	})
-	if err != nil {
-		return errors.Wrap(err, "mg.Spec.ForProvider.ServerID")
-	}
-	mg.Spec.ForProvider.ServerID = reference.ToFloatPtrValue(rsp.ResolvedValue)
-	mg.Spec.ForProvider.ServerIDRef = rsp.ResolvedReference
 
 	return nil
 }

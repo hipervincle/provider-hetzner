@@ -1,0 +1,298 @@
+# Phase 1 of 2 for a private-backend Hetzner web stack.
+#
+# Apply first:
+#   kubectl apply -f examples/namespaced/loadbalancer/v1alpha1/web-stack-foundation.yaml
+#
+# Then wait for:
+# - Subnet/web-stack-subnet to be ready
+# - Server/edge-gateway to be running
+# - Route/internet-egress to be ready
+# - LoadBalancer/web-entrypoint to be ready
+#
+# After that, apply:
+#   kubectl apply -f examples/namespaced/loadbalancer/v1alpha1/web-stack.yaml
+#
+# Only the gateway keeps a public IPv4 address. All workload servers stay
+# private-only and are created in phase 2.
+apiVersion: network.hetzner.m.crossplane.io/v1alpha1
+kind: Network
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: web-stack-network
+  name: web-stack-network
+  namespace: crossplane-system
+spec:
+  forProvider:
+    ipRange: 10.42.0.0/16
+    labels:
+      environment: production
+      stack: web
+    name: web-stack-network
+
+---
+
+apiVersion: network.hetzner.m.crossplane.io/v1alpha1
+kind: Subnet
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: web-stack-subnet
+  name: web-stack-subnet
+  namespace: crossplane-system
+spec:
+  forProvider:
+    ipRange: 10.42.1.0/24
+    networkIdRef:
+      name: web-stack-network
+    networkZone: eu-central
+    type: cloud
+
+---
+
+apiVersion: server.hetzner.m.crossplane.io/v1alpha1
+kind: PlacementGroup
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: web-spread
+  name: web-spread
+  namespace: crossplane-system
+spec:
+  forProvider:
+    labels:
+      environment: production
+      stack: web
+    name: web-spread
+    type: spread
+
+---
+
+apiVersion: network.hetzner.m.crossplane.io/v1alpha1
+kind: Firewall
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: workload-firewall
+  name: workload-firewall
+  namespace: crossplane-system
+spec:
+  forProvider:
+    labels:
+      environment: production
+      stack: web
+    name: workload-firewall
+    rule:
+    - description: Allow HTTP from the private network and load balancer
+      direction: in
+      port: "80"
+      protocol: tcp
+      sourceIps:
+      - 10.42.0.0/16
+    - description: Allow PostgreSQL from the private network
+      direction: in
+      port: "5432"
+      protocol: tcp
+      sourceIps:
+      - 10.42.0.0/16
+    - description: Allow ICMP inside the private network
+      direction: in
+      protocol: icmp
+      sourceIps:
+      - 10.42.0.0/16
+
+---
+
+apiVersion: server.hetzner.m.crossplane.io/v1alpha1
+kind: Server
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: edge-gateway
+  name: edge-gateway
+  namespace: crossplane-system
+spec:
+  forProvider:
+    image: debian-12
+    labels:
+      environment: production
+      role: gateway
+      stack: web
+    location: nbg1
+    name: edge-gateway
+    network:
+    - ip: 10.42.1.10
+      networkIdRef:
+        name: web-stack-network
+    publicNet:
+    - ipv4Enabled: true
+      ipv6Enabled: false
+    serverType: cx23
+    userData: |
+      #cloud-config
+      package_update: true
+      packages:
+      - iptables-persistent
+      write_files:
+      - path: /etc/sysctl.d/99-ip-forwarding.conf
+        permissions: "0644"
+        content: |
+          net.ipv4.ip_forward=1
+          net.ipv6.conf.all.forwarding=1
+      - path: /usr/local/sbin/configure-nat.sh
+        permissions: "0755"
+        content: |
+          #!/bin/bash
+          set -euo pipefail
+          WAN_IFACE="$(ip -4 route show default | awk '{print $5; exit}')"
+          if [[ -z "$${WAN_IFACE}" ]]; then
+            echo "no default WAN interface found" >&2
+            exit 1
+          fi
+          iptables -C FORWARD -s 10.42.0.0/16 -j ACCEPT 2>/dev/null || \
+            iptables -A FORWARD -s 10.42.0.0/16 -j ACCEPT
+          iptables -C FORWARD -d 10.42.0.0/16 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2>/dev/null || \
+            iptables -A FORWARD -d 10.42.0.0/16 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+          iptables -t nat -C POSTROUTING -s 10.42.0.0/16 -o "$${WAN_IFACE}" -j MASQUERADE 2>/dev/null || \
+            iptables -t nat -A POSTROUTING -s 10.42.0.0/16 -o "$${WAN_IFACE}" -j MASQUERADE
+          netfilter-persistent save
+      - path: /etc/systemd/system/nat-setup.service
+        permissions: "0644"
+        content: |
+          [Unit]
+          Description=Configure NAT for private Hetzner network
+          After=network-online.target
+          Wants=network-online.target
+
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/local/sbin/configure-nat.sh
+          RemainAfterExit=yes
+
+          [Install]
+          WantedBy=multi-user.target
+      runcmd:
+      - sysctl --system
+      - systemctl daemon-reload
+      - systemctl enable --now nat-setup.service
+
+---
+
+apiVersion: network.hetzner.m.crossplane.io/v1alpha1
+kind: Route
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: internet-egress
+  name: internet-egress
+  namespace: crossplane-system
+spec:
+  forProvider:
+    destination: 0.0.0.0/0
+    gateway: 10.42.1.10
+    networkIdRef:
+      name: web-stack-network
+
+---
+
+apiVersion: network.hetzner.m.crossplane.io/v1alpha1
+kind: Route
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: office-route
+  name: office-route
+  namespace: crossplane-system
+spec:
+  forProvider:
+    destination: 10.99.0.0/16
+    gateway: 10.42.1.10
+    networkIdRef:
+      name: web-stack-network
+
+---
+
+apiVersion: server.hetzner.m.crossplane.io/v1alpha1
+kind: FloatingIP
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: edge-floating-ip
+  name: edge-floating-ip
+  namespace: crossplane-system
+spec:
+  forProvider:
+    description: Stable ingress IP for the gateway node
+    homeLocation: nbg1
+    labels:
+      environment: production
+      role: gateway
+      stack: web
+    name: edge-floating-ip
+    type: ipv4
+
+---
+
+apiVersion: server.hetzner.m.crossplane.io/v1alpha1
+kind: FloatingIPAssignment
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: edge-floating-ip-assignment
+  name: edge-floating-ip-assignment
+  namespace: crossplane-system
+spec:
+  forProvider:
+    floatingIpIdRef:
+      name: edge-floating-ip
+    serverIdRef:
+      name: edge-gateway
+
+---
+
+apiVersion: loadbalancer.hetzner.m.crossplane.io/v1alpha1
+kind: LoadBalancer
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: web-entrypoint
+  name: web-entrypoint
+  namespace: crossplane-system
+spec:
+  forProvider:
+    labels:
+      environment: production
+      role: edge
+      stack: web
+    loadBalancerType: lb11
+    location: nbg1
+    name: web-entrypoint
+
+---
+
+apiVersion: loadbalancer.hetzner.m.crossplane.io/v1alpha1
+kind: NetworkAttachment
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: web-entrypoint-network
+  name: web-entrypoint-network
+  namespace: crossplane-system
+spec:
+  forProvider:
+    ip: 10.42.1.50
+    loadBalancerIdRef:
+      name: web-entrypoint
+    subnetIdRef:
+      name: web-stack-subnet

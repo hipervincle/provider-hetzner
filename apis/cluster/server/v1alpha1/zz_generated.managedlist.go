@@ -17,8 +17,8 @@ func (l *FirewallAttachmentList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this GroupList.
-func (l *GroupList) GetItems() []resource.Managed {
+// GetItems of this FloatingIPAssignmentList.
+func (l *FloatingIPAssignmentList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -26,8 +26,8 @@ func (l *GroupList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this IPAssignmentList.
-func (l *IPAssignmentList) GetItems() []resource.Managed {
+// GetItems of this FloatingIPList.
+func (l *FloatingIPList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -35,8 +35,8 @@ func (l *IPAssignmentList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this IPList.
-func (l *IPList) GetItems() []resource.Managed {
+// GetItems of this NetworkAttachmentList.
+func (l *NetworkAttachmentList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -44,8 +44,8 @@ func (l *IPList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this KeyList.
-func (l *KeyList) GetItems() []resource.Managed {
+// GetItems of this PlacementGroupList.
+func (l *PlacementGroupList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -53,8 +53,8 @@ func (l *KeyList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this NetworkList.
-func (l *NetworkList) GetItems() []resource.Managed {
+// GetItems of this SSHKeyList.
+func (l *SSHKeyList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]

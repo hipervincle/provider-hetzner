@@ -10,25 +10,25 @@ package v1alpha1
 func (tr *FirewallAttachment) Hub() {}
 
 // Hub marks this type as a conversion hub.
-func (tr *Group) Hub() {}
+func (tr *FloatingIP) Hub() {}
 
 // Hub marks this type as a conversion hub.
-func (tr *IP) Hub() {}
+func (tr *FloatingIPAssignment) Hub() {}
 
 // Hub marks this type as a conversion hub.
-func (tr *IPAssignment) Hub() {}
+func (tr *NetworkAttachment) Hub() {}
 
 // Hub marks this type as a conversion hub.
-func (tr *Key) Hub() {}
-
-// Hub marks this type as a conversion hub.
-func (tr *Network) Hub() {}
+func (tr *PlacementGroup) Hub() {}
 
 // Hub marks this type as a conversion hub.
 func (tr *Server) Hub() {}
 
 // Hub marks this type as a conversion hub.
 func (tr *Snapshot) Hub() {}
+
+// Hub marks this type as a conversion hub.
+func (tr *SSHKey) Hub() {}
 
 // Hub marks this type as a conversion hub.
 func (tr *Volume) Hub() {}

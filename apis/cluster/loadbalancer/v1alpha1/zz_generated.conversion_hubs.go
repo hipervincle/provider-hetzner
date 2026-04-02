@@ -7,13 +7,13 @@
 package v1alpha1
 
 // Hub marks this type as a conversion hub.
-func (tr *Balancer) Hub() {}
+func (tr *LoadBalancer) Hub() {}
 
 // Hub marks this type as a conversion hub.
-func (tr *BalancerNetwork) Hub() {}
+func (tr *LoadBalancerService) Hub() {}
 
 // Hub marks this type as a conversion hub.
-func (tr *BalancerService) Hub() {}
+func (tr *LoadBalancerTarget) Hub() {}
 
 // Hub marks this type as a conversion hub.
-func (tr *BalancerTarget) Hub() {}
+func (tr *NetworkAttachment) Hub() {}

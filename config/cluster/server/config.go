@@ -8,6 +8,7 @@ import (
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("hcloud_server", func(r *config.Resource) {
 		r.ShortGroup = "server"
+		r.LateInitializer.IgnoredFields = append(r.LateInitializer.IgnoredFields, "datacenter")
 		r.References["firewall_ids"] = config.Reference{
 			TerraformName: "hcloud_firewall",
 		}
@@ -16,6 +17,12 @@ func Configure(p *config.Provider) {
 		}
 		r.References["ssh_keys"] = config.Reference{
 			TerraformName: "hcloud_ssh_key",
+		}
+		r.References["network.network_id"] = config.Reference{
+			TerraformName: "hcloud_network",
+		}
+		r.References["network.*.network_id"] = config.Reference{
+			TerraformName: "hcloud_network",
 		}
 	})
 }

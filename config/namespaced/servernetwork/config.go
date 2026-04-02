@@ -7,6 +7,7 @@ import (
 // Configure adds configurations for server network namespaced.
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("hcloud_server_network", func(r *config.Resource) {
+		r.Kind = "NetworkAttachment"
 		r.ShortGroup = "server"
 		r.LateInitializer.IgnoredFields = append(r.LateInitializer.IgnoredFields, "network_id")
 		r.References["server_id"] = config.Reference{

@@ -7,6 +7,7 @@ import (
 // Configure adds configurations for floating IP assignment cluster.
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("hcloud_floating_ip_assignment", func(r *config.Resource) {
+		r.Kind = "FloatingIPAssignment"
 		r.ShortGroup = "server"
 		r.References["floating_ip_id"] = config.Reference{
 			TerraformName: "hcloud_floating_ip",

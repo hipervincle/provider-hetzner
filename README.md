@@ -65,6 +65,25 @@ To delete the test server, run:
 kubectl delete servers.server.hetzner.m node1
 ```
 
+Reference-first namespaced examples are available at:
+
+- `examples/namespaced/server/v1alpha1/simple-server.yaml`
+- `examples/namespaced/server/v1alpha1/networkattachment.yaml`
+- `examples/namespaced/server/v1alpha1/firewallattachment.yaml`
+- `examples/namespaced/loadbalancer/v1alpha1/networkattachment.yaml`
+- `examples/namespaced/loadbalancer/v1alpha1/loadbalancerservice.yaml`
+- `examples/namespaced/loadbalancer/v1alpha1/web-stack-foundation.yaml`
+- `examples/namespaced/loadbalancer/v1alpha1/web-stack.yaml`
+
+The private-backend web stack is split into two phases:
+
+1. `kubectl apply -f examples/namespaced/loadbalancer/v1alpha1/web-stack-foundation.yaml`
+2. Wait for the subnet, gateway, routes, and load balancer to become ready.
+3. `kubectl apply -f examples/namespaced/loadbalancer/v1alpha1/web-stack.yaml`
+
+The main renamed kinds in `v1alpha1` are `LoadBalancer`, `NetworkAttachment`,
+`PlacementGroup`, `SSHKey`, `FloatingIP`, and `FloatingIPAssignment`.
+
 ## Contributing
 
 For the general contribution guide,
@@ -72,7 +91,13 @@ see [Upjet Contribution Guide](https://github.com/crossplane/upjet/blob/main/CON
 
 If you'd like to learn how to use Upjet, see [Usage Guide](https://github.com/crossplane/upjet/tree/main/docs).
 
-To build this provider locally and run it in a local Kubernetes cluster, run `make run`
+To build this provider locally and run it in a local Kubernetes cluster, run
+`make run`.
+
+The local `make run` target binds metrics and webhook listeners to ephemeral
+ports by default to avoid conflicts with other local processes. You can
+override them when needed, for example:
+`make run LOCAL_METRICS_BIND_ADDRESS=127.0.0.1:8081 LOCAL_WEBHOOK_PORT=9444`
 
 ### Add a New Resource
 

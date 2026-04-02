@@ -7,6 +7,7 @@ import (
 // Configure adds configurations for load balancer network cluster.
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("hcloud_load_balancer_network", func(r *config.Resource) {
+		r.Kind = "NetworkAttachment"
 		r.ShortGroup = "loadbalancer"
 		r.LateInitializer.IgnoredFields = append(r.LateInitializer.IgnoredFields, "network_id")
 		r.References["load_balancer_id"] = config.Reference{

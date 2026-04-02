@@ -8,162 +8,162 @@ package v1alpha1
 
 import xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 
-// GetCondition of this Balancer.
-func (mg *Balancer) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+// GetCondition of this LoadBalancer.
+func (mg *LoadBalancer) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
 	return mg.Status.GetCondition(ct)
 }
 
-// GetManagementPolicies of this Balancer.
-func (mg *Balancer) GetManagementPolicies() xpv1.ManagementPolicies {
+// GetManagementPolicies of this LoadBalancer.
+func (mg *LoadBalancer) GetManagementPolicies() xpv1.ManagementPolicies {
 	return mg.Spec.ManagementPolicies
 }
 
-// GetProviderConfigReference of this Balancer.
-func (mg *Balancer) GetProviderConfigReference() *xpv1.ProviderConfigReference {
+// GetProviderConfigReference of this LoadBalancer.
+func (mg *LoadBalancer) GetProviderConfigReference() *xpv1.ProviderConfigReference {
 	return mg.Spec.ProviderConfigReference
 }
 
-// GetWriteConnectionSecretToReference of this Balancer.
-func (mg *Balancer) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
+// GetWriteConnectionSecretToReference of this LoadBalancer.
+func (mg *LoadBalancer) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
 	return mg.Spec.WriteConnectionSecretToReference
 }
 
-// SetConditions of this Balancer.
-func (mg *Balancer) SetConditions(c ...xpv1.Condition) {
+// SetConditions of this LoadBalancer.
+func (mg *LoadBalancer) SetConditions(c ...xpv1.Condition) {
 	mg.Status.SetConditions(c...)
 }
 
-// SetManagementPolicies of this Balancer.
-func (mg *Balancer) SetManagementPolicies(r xpv1.ManagementPolicies) {
+// SetManagementPolicies of this LoadBalancer.
+func (mg *LoadBalancer) SetManagementPolicies(r xpv1.ManagementPolicies) {
 	mg.Spec.ManagementPolicies = r
 }
 
-// SetProviderConfigReference of this Balancer.
-func (mg *Balancer) SetProviderConfigReference(r *xpv1.ProviderConfigReference) {
+// SetProviderConfigReference of this LoadBalancer.
+func (mg *LoadBalancer) SetProviderConfigReference(r *xpv1.ProviderConfigReference) {
 	mg.Spec.ProviderConfigReference = r
 }
 
-// SetWriteConnectionSecretToReference of this Balancer.
-func (mg *Balancer) SetWriteConnectionSecretToReference(r *xpv1.LocalSecretReference) {
+// SetWriteConnectionSecretToReference of this LoadBalancer.
+func (mg *LoadBalancer) SetWriteConnectionSecretToReference(r *xpv1.LocalSecretReference) {
 	mg.Spec.WriteConnectionSecretToReference = r
 }
 
-// GetCondition of this BalancerNetwork.
-func (mg *BalancerNetwork) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+// GetCondition of this LoadBalancerService.
+func (mg *LoadBalancerService) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
 	return mg.Status.GetCondition(ct)
 }
 
-// GetManagementPolicies of this BalancerNetwork.
-func (mg *BalancerNetwork) GetManagementPolicies() xpv1.ManagementPolicies {
+// GetManagementPolicies of this LoadBalancerService.
+func (mg *LoadBalancerService) GetManagementPolicies() xpv1.ManagementPolicies {
 	return mg.Spec.ManagementPolicies
 }
 
-// GetProviderConfigReference of this BalancerNetwork.
-func (mg *BalancerNetwork) GetProviderConfigReference() *xpv1.ProviderConfigReference {
+// GetProviderConfigReference of this LoadBalancerService.
+func (mg *LoadBalancerService) GetProviderConfigReference() *xpv1.ProviderConfigReference {
 	return mg.Spec.ProviderConfigReference
 }
 
-// GetWriteConnectionSecretToReference of this BalancerNetwork.
-func (mg *BalancerNetwork) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
+// GetWriteConnectionSecretToReference of this LoadBalancerService.
+func (mg *LoadBalancerService) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
 	return mg.Spec.WriteConnectionSecretToReference
 }
 
-// SetConditions of this BalancerNetwork.
-func (mg *BalancerNetwork) SetConditions(c ...xpv1.Condition) {
+// SetConditions of this LoadBalancerService.
+func (mg *LoadBalancerService) SetConditions(c ...xpv1.Condition) {
 	mg.Status.SetConditions(c...)
 }
 
-// SetManagementPolicies of this BalancerNetwork.
-func (mg *BalancerNetwork) SetManagementPolicies(r xpv1.ManagementPolicies) {
+// SetManagementPolicies of this LoadBalancerService.
+func (mg *LoadBalancerService) SetManagementPolicies(r xpv1.ManagementPolicies) {
 	mg.Spec.ManagementPolicies = r
 }
 
-// SetProviderConfigReference of this BalancerNetwork.
-func (mg *BalancerNetwork) SetProviderConfigReference(r *xpv1.ProviderConfigReference) {
+// SetProviderConfigReference of this LoadBalancerService.
+func (mg *LoadBalancerService) SetProviderConfigReference(r *xpv1.ProviderConfigReference) {
 	mg.Spec.ProviderConfigReference = r
 }
 
-// SetWriteConnectionSecretToReference of this BalancerNetwork.
-func (mg *BalancerNetwork) SetWriteConnectionSecretToReference(r *xpv1.LocalSecretReference) {
+// SetWriteConnectionSecretToReference of this LoadBalancerService.
+func (mg *LoadBalancerService) SetWriteConnectionSecretToReference(r *xpv1.LocalSecretReference) {
 	mg.Spec.WriteConnectionSecretToReference = r
 }
 
-// GetCondition of this BalancerService.
-func (mg *BalancerService) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+// GetCondition of this LoadBalancerTarget.
+func (mg *LoadBalancerTarget) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
 	return mg.Status.GetCondition(ct)
 }
 
-// GetManagementPolicies of this BalancerService.
-func (mg *BalancerService) GetManagementPolicies() xpv1.ManagementPolicies {
+// GetManagementPolicies of this LoadBalancerTarget.
+func (mg *LoadBalancerTarget) GetManagementPolicies() xpv1.ManagementPolicies {
 	return mg.Spec.ManagementPolicies
 }
 
-// GetProviderConfigReference of this BalancerService.
-func (mg *BalancerService) GetProviderConfigReference() *xpv1.ProviderConfigReference {
+// GetProviderConfigReference of this LoadBalancerTarget.
+func (mg *LoadBalancerTarget) GetProviderConfigReference() *xpv1.ProviderConfigReference {
 	return mg.Spec.ProviderConfigReference
 }
 
-// GetWriteConnectionSecretToReference of this BalancerService.
-func (mg *BalancerService) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
+// GetWriteConnectionSecretToReference of this LoadBalancerTarget.
+func (mg *LoadBalancerTarget) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
 	return mg.Spec.WriteConnectionSecretToReference
 }
 
-// SetConditions of this BalancerService.
-func (mg *BalancerService) SetConditions(c ...xpv1.Condition) {
+// SetConditions of this LoadBalancerTarget.
+func (mg *LoadBalancerTarget) SetConditions(c ...xpv1.Condition) {
 	mg.Status.SetConditions(c...)
 }
 
-// SetManagementPolicies of this BalancerService.
-func (mg *BalancerService) SetManagementPolicies(r xpv1.ManagementPolicies) {
+// SetManagementPolicies of this LoadBalancerTarget.
+func (mg *LoadBalancerTarget) SetManagementPolicies(r xpv1.ManagementPolicies) {
 	mg.Spec.ManagementPolicies = r
 }
 
-// SetProviderConfigReference of this BalancerService.
-func (mg *BalancerService) SetProviderConfigReference(r *xpv1.ProviderConfigReference) {
+// SetProviderConfigReference of this LoadBalancerTarget.
+func (mg *LoadBalancerTarget) SetProviderConfigReference(r *xpv1.ProviderConfigReference) {
 	mg.Spec.ProviderConfigReference = r
 }
 
-// SetWriteConnectionSecretToReference of this BalancerService.
-func (mg *BalancerService) SetWriteConnectionSecretToReference(r *xpv1.LocalSecretReference) {
+// SetWriteConnectionSecretToReference of this LoadBalancerTarget.
+func (mg *LoadBalancerTarget) SetWriteConnectionSecretToReference(r *xpv1.LocalSecretReference) {
 	mg.Spec.WriteConnectionSecretToReference = r
 }
 
-// GetCondition of this BalancerTarget.
-func (mg *BalancerTarget) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+// GetCondition of this NetworkAttachment.
+func (mg *NetworkAttachment) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
 	return mg.Status.GetCondition(ct)
 }
 
-// GetManagementPolicies of this BalancerTarget.
-func (mg *BalancerTarget) GetManagementPolicies() xpv1.ManagementPolicies {
+// GetManagementPolicies of this NetworkAttachment.
+func (mg *NetworkAttachment) GetManagementPolicies() xpv1.ManagementPolicies {
 	return mg.Spec.ManagementPolicies
 }
 
-// GetProviderConfigReference of this BalancerTarget.
-func (mg *BalancerTarget) GetProviderConfigReference() *xpv1.ProviderConfigReference {
+// GetProviderConfigReference of this NetworkAttachment.
+func (mg *NetworkAttachment) GetProviderConfigReference() *xpv1.ProviderConfigReference {
 	return mg.Spec.ProviderConfigReference
 }
 
-// GetWriteConnectionSecretToReference of this BalancerTarget.
-func (mg *BalancerTarget) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
+// GetWriteConnectionSecretToReference of this NetworkAttachment.
+func (mg *NetworkAttachment) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
 	return mg.Spec.WriteConnectionSecretToReference
 }
 
-// SetConditions of this BalancerTarget.
-func (mg *BalancerTarget) SetConditions(c ...xpv1.Condition) {
+// SetConditions of this NetworkAttachment.
+func (mg *NetworkAttachment) SetConditions(c ...xpv1.Condition) {
 	mg.Status.SetConditions(c...)
 }
 
-// SetManagementPolicies of this BalancerTarget.
-func (mg *BalancerTarget) SetManagementPolicies(r xpv1.ManagementPolicies) {
+// SetManagementPolicies of this NetworkAttachment.
+func (mg *NetworkAttachment) SetManagementPolicies(r xpv1.ManagementPolicies) {
 	mg.Spec.ManagementPolicies = r
 }
 
-// SetProviderConfigReference of this BalancerTarget.
-func (mg *BalancerTarget) SetProviderConfigReference(r *xpv1.ProviderConfigReference) {
+// SetProviderConfigReference of this NetworkAttachment.
+func (mg *NetworkAttachment) SetProviderConfigReference(r *xpv1.ProviderConfigReference) {
 	mg.Spec.ProviderConfigReference = r
 }
 
-// SetWriteConnectionSecretToReference of this BalancerTarget.
-func (mg *BalancerTarget) SetWriteConnectionSecretToReference(r *xpv1.LocalSecretReference) {
+// SetWriteConnectionSecretToReference of this NetworkAttachment.
+func (mg *NetworkAttachment) SetWriteConnectionSecretToReference(r *xpv1.LocalSecretReference) {
 	mg.Spec.WriteConnectionSecretToReference = r
 }

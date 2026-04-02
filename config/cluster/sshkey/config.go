@@ -7,6 +7,7 @@ import (
 // Configure adds configurations for ssh key cluster.
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("hcloud_ssh_key", func(r *config.Resource) {
+		r.Kind = "SSHKey"
 		r.ShortGroup = "server"
 	})
 }
