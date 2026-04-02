@@ -1,7 +1,7 @@
 # Phase 1 of 2 for a private-backend Hetzner web stack.
 #
 # Apply first:
-#   kubectl apply -f examples/namespaced/loadbalancer/v1alpha1/web-stack-foundation.yaml
+#   kubectl apply -f examples/web-stack/web-stack-foundation.yaml
 #
 # Then wait for:
 # - Subnet/web-stack-subnet to be ready
@@ -10,10 +10,13 @@
 # - LoadBalancer/web-entrypoint to be ready
 #
 # After that, apply:
-#   kubectl apply -f examples/namespaced/loadbalancer/v1alpha1/web-stack.yaml
+#   kubectl apply -f examples/web-stack/web-stack.yaml
 #
 # Only the gateway keeps a public IPv4 address. All workload servers stay
 # private-only and are created in phase 2.
+# The Hetzner Cloud Firewall in this phase protects only the public gateway.
+# Private-only backend servers are not attached to a Hetzner Cloud Firewall.
+# Narrow the SSH source CIDR before using this outside a test environment.
 apiVersion: network.hetzner.m.crossplane.io/v1alpha1
 kind: Network
 metadata:
@@ -77,33 +80,28 @@ metadata:
   annotations:
     meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
   labels:
-    testing.upbound.io/example-name: workload-firewall
-  name: workload-firewall
+    testing.upbound.io/example-name: edge-gateway-firewall
+  name: edge-gateway-firewall
   namespace: crossplane-system
 spec:
   forProvider:
     labels:
       environment: production
+      role: gateway
       stack: web
-    name: workload-firewall
+    name: edge-gateway-firewall
     rule:
-    - description: Allow HTTP from the private network and load balancer
+    - description: Allow SSH for initial access; narrow sourceIps before production
       direction: in
-      port: "80"
+      port: "22"
       protocol: tcp
       sourceIps:
-      - 10.42.0.0/16
-    - description: Allow PostgreSQL from the private network
-      direction: in
-      port: "5432"
-      protocol: tcp
-      sourceIps:
-      - 10.42.0.0/16
-    - description: Allow ICMP inside the private network
+      - 0.0.0.0/0
+    - description: Allow ICMP for diagnostics
       direction: in
       protocol: icmp
       sourceIps:
-      - 10.42.0.0/16
+      - 0.0.0.0/0
 
 ---
 
@@ -180,6 +178,24 @@ spec:
       - sysctl --system
       - systemctl daemon-reload
       - systemctl enable --now nat-setup.service
+
+---
+
+apiVersion: server.hetzner.m.crossplane.io/v1alpha1
+kind: FirewallAttachment
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack-foundation
+  labels:
+    testing.upbound.io/example-name: edge-gateway-firewall-attachment
+  name: edge-gateway-firewall-attachment
+  namespace: crossplane-system
+spec:
+  forProvider:
+    firewallIdRef:
+      name: edge-gateway-firewall
+    serverIdsRefs:
+    - name: edge-gateway
 
 ---
 

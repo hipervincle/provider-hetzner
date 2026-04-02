@@ -29,6 +29,7 @@ import (
 	snapshot "github.com/miaits/provider-hetzner/internal/controller/cluster/server/snapshot"
 	sshkey "github.com/miaits/provider-hetzner/internal/controller/cluster/server/sshkey"
 	volume "github.com/miaits/provider-hetzner/internal/controller/cluster/server/volume"
+	volumeattachment "github.com/miaits/provider-hetzner/internal/controller/cluster/server/volumeattachment"
 )
 
 // Setup creates all controllers with the supplied logger and adds them to
@@ -55,6 +56,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		snapshot.Setup,
 		sshkey.Setup,
 		volume.Setup,
+		volumeattachment.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err
@@ -87,6 +89,7 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 		snapshot.SetupGated,
 		sshkey.SetupGated,
 		volume.SetupGated,
+		volumeattachment.SetupGated,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err

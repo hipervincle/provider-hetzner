@@ -1,0 +1,52 @@
+apiVersion: server.hetzner.m.crossplane.io/v1alpha1
+kind: VolumeAttachment
+metadata:
+  annotations:
+    meta.upbound.io/example-id: server/v1alpha1/volumeattachment
+  labels:
+    testing.upbound.io/example-name: main
+  name: main
+  namespace: crossplane-system
+spec:
+  forProvider:
+    automount: true
+    serverIdSelector:
+      matchLabels:
+        testing.upbound.io/example-name: node1
+    volumeIdSelector:
+      matchLabels:
+        testing.upbound.io/example-name: master
+
+---
+
+apiVersion: server.hetzner.m.crossplane.io/v1alpha1
+kind: Server
+metadata:
+  annotations:
+    meta.upbound.io/example-id: server/v1alpha1/volumeattachment
+  labels:
+    testing.upbound.io/example-name: node1
+  name: node1
+  namespace: crossplane-system
+spec:
+  forProvider:
+    datacenter: nbg1-dc3
+    image: debian-12
+    name: node1
+    serverType: cx23
+
+---
+
+apiVersion: server.hetzner.m.crossplane.io/v1alpha1
+kind: Volume
+metadata:
+  annotations:
+    meta.upbound.io/example-id: server/v1alpha1/volumeattachment
+  labels:
+    testing.upbound.io/example-name: master
+  name: master
+  namespace: crossplane-system
+spec:
+  forProvider:
+    location: nbg1
+    size: 10

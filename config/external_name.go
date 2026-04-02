@@ -33,6 +33,7 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"hcloud_ssh_key":                sshKeyExternalName(),
 	"hcloud_snapshot":               config.IdentifierFromProvider,
 	"hcloud_volume":                 volumeExternalName(),
+	"hcloud_volume_attachment":      config.IdentifierFromProvider,
 }
 
 func idWithStub() config.ExternalName {

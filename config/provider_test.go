@@ -31,6 +31,7 @@ var expectedResources = map[string]expectedResource{
 	"hcloud_ssh_key":                {shortGroup: "server", kind: "SSHKey"},
 	"hcloud_uploaded_certificate":   {shortGroup: "network"},
 	"hcloud_volume":                 {shortGroup: "server"},
+	"hcloud_volume_attachment":      {shortGroup: "server", kind: "VolumeAttachment"},
 }
 
 func TestProviderConfigurationConsistency(t *testing.T) {
@@ -74,6 +75,8 @@ func assertProviderConsistency(t *testing.T, pc *ujconfig.Provider) {
 	assertReference(t, pc.Resources["hcloud_server"], "network.network_id", "hcloud_network")
 	assertReference(t, pc.Resources["hcloud_server"], "network.*.network_id", "hcloud_network")
 	assertReference(t, pc.Resources["hcloud_load_balancer_service"], "http.*.certificates", "hcloud_managed_certificate")
+	assertReference(t, pc.Resources["hcloud_volume_attachment"], "server_id", "hcloud_server")
+	assertReference(t, pc.Resources["hcloud_volume_attachment"], "volume_id", "hcloud_volume")
 	assertIgnoredLateInitField(t, pc.Resources["hcloud_server"], "datacenter")
 }
 

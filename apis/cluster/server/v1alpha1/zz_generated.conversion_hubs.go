@@ -32,3 +32,6 @@ func (tr *SSHKey) Hub() {}
 
 // Hub marks this type as a conversion hub.
 func (tr *Volume) Hub() {}
+
+// Hub marks this type as a conversion hub.
+func (tr *VolumeAttachment) Hub() {}

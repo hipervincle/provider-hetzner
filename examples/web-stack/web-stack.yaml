@@ -1,7 +1,7 @@
 # Phase 2 of 2 for a private-backend Hetzner web stack.
 #
 # Apply after:
-#   kubectl apply -f examples/namespaced/loadbalancer/v1alpha1/web-stack-foundation.yaml
+#   kubectl apply -f examples/web-stack/web-stack-foundation.yaml
 #
 # Wait until these foundation resources are ready before applying this file:
 # - Subnet/web-stack-subnet
@@ -13,7 +13,9 @@
 # The backend servers in this phase are private-only:
 # - public IPv4 and IPv6 are disabled
 # - each server gets its first NIC at creation time via spec.forProvider.network
-# - outbound internet access comes from the gateway node and the default route
+# - outbound internet access comes from the gateway node and a guest-level
+#   default route via Hetzner's private-network router at 10.42.0.1
+# - backend packet filtering should be done inside the guest OS if needed
 apiVersion: server.hetzner.m.crossplane.io/v1alpha1
 kind: Server
 metadata:
@@ -44,9 +46,25 @@ spec:
     serverType: cx23
     userData: |
       #cloud-config
-      package_update: true
-      packages:
-      - nginx
+      bootcmd:
+      - |
+        cat >/etc/netplan/61-private-egress.yaml <<'EOF'
+        network:
+          version: 2
+          ethernets:
+            enp7s0:
+              dhcp4: true
+              dhcp6: false
+              nameservers:
+                addresses:
+                - 1.1.1.1
+                - 1.0.0.1
+              routes:
+              - to: 0.0.0.0/0
+                via: 10.42.0.1
+        EOF
+      - netplan apply
+      - systemctl restart systemd-resolved
       write_files:
       - path: /var/www/html/index.html
         permissions: "0644"
@@ -56,6 +74,8 @@ spec:
         permissions: "0644"
         content: ok
       runcmd:
+      - apt-get update
+      - DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
       - systemctl enable nginx
       - systemctl restart nginx
 
@@ -91,9 +111,25 @@ spec:
     serverType: cx23
     userData: |
       #cloud-config
-      package_update: true
-      packages:
-      - nginx
+      bootcmd:
+      - |
+        cat >/etc/netplan/61-private-egress.yaml <<'EOF'
+        network:
+          version: 2
+          ethernets:
+            enp7s0:
+              dhcp4: true
+              dhcp6: false
+              nameservers:
+                addresses:
+                - 1.1.1.1
+                - 1.0.0.1
+              routes:
+              - to: 0.0.0.0/0
+                via: 10.42.0.1
+        EOF
+      - netplan apply
+      - systemctl restart systemd-resolved
       write_files:
       - path: /var/www/html/index.html
         permissions: "0644"
@@ -103,6 +139,8 @@ spec:
         permissions: "0644"
         content: ok
       runcmd:
+      - apt-get update
+      - DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
       - systemctl enable nginx
       - systemctl restart nginx
 
@@ -134,6 +172,27 @@ spec:
     - ipv4Enabled: false
       ipv6Enabled: false
     serverType: cx23
+    userData: |
+      #cloud-config
+      bootcmd:
+      - |
+        cat >/etc/netplan/61-private-egress.yaml <<'EOF'
+        network:
+          version: 2
+          ethernets:
+            enp7s0:
+              dhcp4: true
+              dhcp6: false
+              nameservers:
+                addresses:
+                - 1.1.1.1
+                - 1.0.0.1
+              routes:
+              - to: 0.0.0.0/0
+                via: 10.42.0.1
+        EOF
+      - netplan apply
+      - systemctl restart systemd-resolved
 
 ---
 
@@ -148,15 +207,13 @@ metadata:
   namespace: crossplane-system
 spec:
   forProvider:
-    automount: true
     format: ext4
     labels:
       environment: production
       role: db
       stack: web
+    location: nbg1
     name: db-data
-    serverIdRef:
-      name: db-1
     size: 80
 
 ---
@@ -198,6 +255,25 @@ spec:
       name: web-b
     type: server
     usePrivateIp: true
+
+---
+
+apiVersion: server.hetzner.m.crossplane.io/v1alpha1
+kind: VolumeAttachment
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/web-stack
+  labels:
+    testing.upbound.io/example-name: db-data-attachment
+  name: db-data-attachment
+  namespace: crossplane-system
+spec:
+  forProvider:
+    automount: true
+    serverIdRef:
+      name: db-1
+    volumeIdRef:
+      name: db-data
 
 ---
 
