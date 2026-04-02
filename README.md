@@ -22,11 +22,12 @@ generation tools and exposes XRM-conformant managed resources for
 
 ## Getting Started
 
-The provider needs a Kubernetes secret with an API Token 
-for Hetzner Cloud. To create the secret, run:
+The provider needs a Kubernetes secret with an API token
+for Hetzner Cloud. Create it in `crossplane-system`:
 
 ```bash
 kubectl create secret generic hetzner   \
+-n crossplane-system                    \
 --from-literal=credentials='{"token":"<TOKEN>"}'   \
 --dry-run=client -o yaml | kubectl apply -f -
 ```
@@ -41,6 +42,24 @@ metadata:
   name: provider-hetzner
 spec:
   package: ghcr.io/miaits/provider-hetzner:v1.0.0-alpha.1
+```
+
+After installing the provider, create a provider configuration before
+applying managed resources:
+
+
+```yaml
+apiVersion: hetzner.m.crossplane.io/v1beta1
+kind: ClusterProviderConfig
+metadata:
+  name: default
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      name: hetzner
+      namespace: crossplane-system
+      key: credentials
 ```
 
 To create a Hetzner server for test, apply:
@@ -72,14 +91,14 @@ Reference-first namespaced examples are available at:
 - `examples/namespaced/server/v1alpha1/firewallattachment.yaml`
 - `examples/namespaced/loadbalancer/v1alpha1/networkattachment.yaml`
 - `examples/namespaced/loadbalancer/v1alpha1/loadbalancerservice.yaml`
-- `examples/namespaced/loadbalancer/v1alpha1/web-stack-foundation.yaml`
-- `examples/namespaced/loadbalancer/v1alpha1/web-stack.yaml`
+- `examples/web-stack/web-stack-foundation.yaml`
+- `examples/web-stack/web-stack.yaml`
 
 The private-backend web stack is split into two phases:
 
-1. `kubectl apply -f examples/namespaced/loadbalancer/v1alpha1/web-stack-foundation.yaml`
+1. `kubectl apply -f examples/web-stack/web-stack-foundation.yaml`
 2. Wait for the subnet, gateway, routes, and load balancer to become ready.
-3. `kubectl apply -f examples/namespaced/loadbalancer/v1alpha1/web-stack.yaml`
+3. `kubectl apply -f examples/web-stack/web-stack.yaml`
 
 The main renamed kinds in `v1alpha1` are `LoadBalancer`, `NetworkAttachment`,
 `PlacementGroup`, `SSHKey`, `FloatingIP`, and `FloatingIPAssignment`.
