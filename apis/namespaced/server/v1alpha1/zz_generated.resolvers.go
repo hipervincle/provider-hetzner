@@ -93,8 +93,8 @@ func (mg *FirewallAttachment) ResolveReferences(ctx context.Context, c client.Re
 	return nil
 }
 
-// ResolveReferences of this IP.
-func (mg *IP) ResolveReferences(ctx context.Context, c client.Reader) error {
+// ResolveReferences of this FloatingIP.
+func (mg *FloatingIP) ResolveReferences(ctx context.Context, c client.Reader) error {
 	r := reference.NewAPINamespacedResolver(c, mg)
 
 	var rsp reference.NamespacedResolutionResponse
@@ -137,8 +137,8 @@ func (mg *IP) ResolveReferences(ctx context.Context, c client.Reader) error {
 	return nil
 }
 
-// ResolveReferences of this IPAssignment.
-func (mg *IPAssignment) ResolveReferences(ctx context.Context, c client.Reader) error {
+// ResolveReferences of this FloatingIPAssignment.
+func (mg *FloatingIPAssignment) ResolveReferences(ctx context.Context, c client.Reader) error {
 	r := reference.NewAPINamespacedResolver(c, mg)
 
 	var rsp reference.NamespacedResolutionResponse
@@ -151,8 +151,8 @@ func (mg *IPAssignment) ResolveReferences(ctx context.Context, c client.Reader) 
 		Reference:    mg.Spec.ForProvider.FloatingIPIDRef,
 		Selector:     mg.Spec.ForProvider.FloatingIPIDSelector,
 		To: reference.To{
-			List:    &IPList{},
-			Managed: &IP{},
+			List:    &FloatingIPList{},
+			Managed: &FloatingIP{},
 		},
 	})
 	if err != nil {
@@ -185,8 +185,8 @@ func (mg *IPAssignment) ResolveReferences(ctx context.Context, c client.Reader) 
 		Reference:    mg.Spec.InitProvider.FloatingIPIDRef,
 		Selector:     mg.Spec.InitProvider.FloatingIPIDSelector,
 		To: reference.To{
-			List:    &IPList{},
-			Managed: &IP{},
+			List:    &FloatingIPList{},
+			Managed: &FloatingIP{},
 		},
 	})
 	if err != nil {
@@ -215,8 +215,8 @@ func (mg *IPAssignment) ResolveReferences(ctx context.Context, c client.Reader) 
 	return nil
 }
 
-// ResolveReferences of this Network.
-func (mg *Network) ResolveReferences(ctx context.Context, c client.Reader) error {
+// ResolveReferences of this NetworkAttachment.
+func (mg *NetworkAttachment) ResolveReferences(ctx context.Context, c client.Reader) error {
 	r := reference.NewAPINamespacedResolver(c, mg)
 
 	var rsp reference.NamespacedResolutionResponse
@@ -318,6 +318,25 @@ func (mg *Server) ResolveReferences(ctx context.Context, c client.Reader) error 
 	mg.Spec.ForProvider.FirewallIds = reference.ToFloatPtrValues(mrsp.ResolvedValues)
 	mg.Spec.ForProvider.FirewallIdsRefs = mrsp.ResolvedReferences
 
+	for i3 := 0; i3 < len(mg.Spec.ForProvider.Network); i3++ {
+		rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+			CurrentValue: reference.FromFloatPtrValue(mg.Spec.ForProvider.Network[i3].NetworkID),
+			Extract:      reference.ExternalName(),
+			Namespace:    mg.GetNamespace(),
+			Reference:    mg.Spec.ForProvider.Network[i3].NetworkIDRef,
+			Selector:     mg.Spec.ForProvider.Network[i3].NetworkIDSelector,
+			To: reference.To{
+				List:    &v1alpha1.NetworkList{},
+				Managed: &v1alpha1.Network{},
+			},
+		})
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.ForProvider.Network[i3].NetworkID")
+		}
+		mg.Spec.ForProvider.Network[i3].NetworkID = reference.ToFloatPtrValue(rsp.ResolvedValue)
+		mg.Spec.ForProvider.Network[i3].NetworkIDRef = rsp.ResolvedReference
+
+	}
 	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
 		CurrentValue: reference.FromFloatPtrValue(mg.Spec.ForProvider.PlacementGroupID),
 		Extract:      reference.ExternalName(),
@@ -325,8 +344,8 @@ func (mg *Server) ResolveReferences(ctx context.Context, c client.Reader) error 
 		Reference:    mg.Spec.ForProvider.PlacementGroupIDRef,
 		Selector:     mg.Spec.ForProvider.PlacementGroupIDSelector,
 		To: reference.To{
-			List:    &GroupList{},
-			Managed: &Group{},
+			List:    &PlacementGroupList{},
+			Managed: &PlacementGroup{},
 		},
 	})
 	if err != nil {
@@ -342,8 +361,8 @@ func (mg *Server) ResolveReferences(ctx context.Context, c client.Reader) error 
 		References:    mg.Spec.ForProvider.SSHKeysRefs,
 		Selector:      mg.Spec.ForProvider.SSHKeysSelector,
 		To: reference.To{
-			List:    &KeyList{},
-			Managed: &Key{},
+			List:    &SSHKeyList{},
+			Managed: &SSHKey{},
 		},
 	})
 	if err != nil {
@@ -369,6 +388,25 @@ func (mg *Server) ResolveReferences(ctx context.Context, c client.Reader) error 
 	mg.Spec.InitProvider.FirewallIds = reference.ToFloatPtrValues(mrsp.ResolvedValues)
 	mg.Spec.InitProvider.FirewallIdsRefs = mrsp.ResolvedReferences
 
+	for i3 := 0; i3 < len(mg.Spec.InitProvider.Network); i3++ {
+		rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+			CurrentValue: reference.FromFloatPtrValue(mg.Spec.InitProvider.Network[i3].NetworkID),
+			Extract:      reference.ExternalName(),
+			Namespace:    mg.GetNamespace(),
+			Reference:    mg.Spec.InitProvider.Network[i3].NetworkIDRef,
+			Selector:     mg.Spec.InitProvider.Network[i3].NetworkIDSelector,
+			To: reference.To{
+				List:    &v1alpha1.NetworkList{},
+				Managed: &v1alpha1.Network{},
+			},
+		})
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.InitProvider.Network[i3].NetworkID")
+		}
+		mg.Spec.InitProvider.Network[i3].NetworkID = reference.ToFloatPtrValue(rsp.ResolvedValue)
+		mg.Spec.InitProvider.Network[i3].NetworkIDRef = rsp.ResolvedReference
+
+	}
 	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
 		CurrentValue: reference.FromFloatPtrValue(mg.Spec.InitProvider.PlacementGroupID),
 		Extract:      reference.ExternalName(),
@@ -376,8 +414,8 @@ func (mg *Server) ResolveReferences(ctx context.Context, c client.Reader) error 
 		Reference:    mg.Spec.InitProvider.PlacementGroupIDRef,
 		Selector:     mg.Spec.InitProvider.PlacementGroupIDSelector,
 		To: reference.To{
-			List:    &GroupList{},
-			Managed: &Group{},
+			List:    &PlacementGroupList{},
+			Managed: &PlacementGroup{},
 		},
 	})
 	if err != nil {
@@ -393,8 +431,8 @@ func (mg *Server) ResolveReferences(ctx context.Context, c client.Reader) error 
 		References:    mg.Spec.InitProvider.SSHKeysRefs,
 		Selector:      mg.Spec.InitProvider.SSHKeysSelector,
 		To: reference.To{
-			List:    &KeyList{},
-			Managed: &Key{},
+			List:    &SSHKeyList{},
+			Managed: &SSHKey{},
 		},
 	})
 	if err != nil {
@@ -490,6 +528,84 @@ func (mg *Volume) ResolveReferences(ctx context.Context, c client.Reader) error 
 	}
 	mg.Spec.InitProvider.ServerID = reference.ToFloatPtrValue(rsp.ResolvedValue)
 	mg.Spec.InitProvider.ServerIDRef = rsp.ResolvedReference
+
+	return nil
+}
+
+// ResolveReferences of this VolumeAttachment.
+func (mg *VolumeAttachment) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPINamespacedResolver(c, mg)
+
+	var rsp reference.NamespacedResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromFloatPtrValue(mg.Spec.ForProvider.ServerID),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.ServerIDRef,
+		Selector:     mg.Spec.ForProvider.ServerIDSelector,
+		To: reference.To{
+			List:    &ServerList{},
+			Managed: &Server{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.ServerID")
+	}
+	mg.Spec.ForProvider.ServerID = reference.ToFloatPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.ServerIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromFloatPtrValue(mg.Spec.ForProvider.VolumeID),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.VolumeIDRef,
+		Selector:     mg.Spec.ForProvider.VolumeIDSelector,
+		To: reference.To{
+			List:    &VolumeList{},
+			Managed: &Volume{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.VolumeID")
+	}
+	mg.Spec.ForProvider.VolumeID = reference.ToFloatPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.VolumeIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromFloatPtrValue(mg.Spec.InitProvider.ServerID),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.InitProvider.ServerIDRef,
+		Selector:     mg.Spec.InitProvider.ServerIDSelector,
+		To: reference.To{
+			List:    &ServerList{},
+			Managed: &Server{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.ServerID")
+	}
+	mg.Spec.InitProvider.ServerID = reference.ToFloatPtrValue(rsp.ResolvedValue)
+	mg.Spec.InitProvider.ServerIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.NamespacedResolutionRequest{
+		CurrentValue: reference.FromFloatPtrValue(mg.Spec.InitProvider.VolumeID),
+		Extract:      reference.ExternalName(),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.InitProvider.VolumeIDRef,
+		Selector:     mg.Spec.InitProvider.VolumeIDSelector,
+		To: reference.To{
+			List:    &VolumeList{},
+			Managed: &Volume{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.VolumeID")
+	}
+	mg.Spec.InitProvider.VolumeID = reference.ToFloatPtrValue(rsp.ResolvedValue)
+	mg.Spec.InitProvider.VolumeIDRef = rsp.ResolvedReference
 
 	return nil
 }

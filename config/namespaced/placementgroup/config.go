@@ -7,6 +7,7 @@ import (
 // Configure adds configurations for placement group namespaced.
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("hcloud_placement_group", func(r *config.Resource) {
+		r.Kind = "PlacementGroup"
 		r.ShortGroup = "server"
 	})
 }

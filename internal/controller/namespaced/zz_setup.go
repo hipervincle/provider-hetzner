@@ -9,10 +9,10 @@ import (
 
 	"github.com/crossplane/upjet/v2/pkg/controller"
 
-	balancer "github.com/miaits/provider-hetzner/internal/controller/namespaced/loadbalancer/balancer"
-	balancernetwork "github.com/miaits/provider-hetzner/internal/controller/namespaced/loadbalancer/balancernetwork"
-	balancerservice "github.com/miaits/provider-hetzner/internal/controller/namespaced/loadbalancer/balancerservice"
-	balancertarget "github.com/miaits/provider-hetzner/internal/controller/namespaced/loadbalancer/balancertarget"
+	loadbalancer "github.com/miaits/provider-hetzner/internal/controller/namespaced/loadbalancer/loadbalancer"
+	loadbalancerservice "github.com/miaits/provider-hetzner/internal/controller/namespaced/loadbalancer/loadbalancerservice"
+	loadbalancertarget "github.com/miaits/provider-hetzner/internal/controller/namespaced/loadbalancer/loadbalancertarget"
+	networkattachment "github.com/miaits/provider-hetzner/internal/controller/namespaced/loadbalancer/networkattachment"
 	certificate "github.com/miaits/provider-hetzner/internal/controller/namespaced/network/certificate"
 	firewall "github.com/miaits/provider-hetzner/internal/controller/namespaced/network/firewall"
 	managedcertificate "github.com/miaits/provider-hetzner/internal/controller/namespaced/network/managedcertificate"
@@ -21,24 +21,25 @@ import (
 	subnet "github.com/miaits/provider-hetzner/internal/controller/namespaced/network/subnet"
 	providerconfig "github.com/miaits/provider-hetzner/internal/controller/namespaced/providerconfig"
 	firewallattachment "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/firewallattachment"
-	group "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/group"
-	ip "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/ip"
-	ipassignment "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/ipassignment"
-	key "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/key"
-	networkserver "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/network"
+	floatingip "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/floatingip"
+	floatingipassignment "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/floatingipassignment"
+	networkattachmentserver "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/networkattachment"
+	placementgroup "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/placementgroup"
 	server "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/server"
 	snapshot "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/snapshot"
+	sshkey "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/sshkey"
 	volume "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/volume"
+	volumeattachment "github.com/miaits/provider-hetzner/internal/controller/namespaced/server/volumeattachment"
 )
 
 // Setup creates all controllers with the supplied logger and adds them to
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		balancer.Setup,
-		balancernetwork.Setup,
-		balancerservice.Setup,
-		balancertarget.Setup,
+		loadbalancer.Setup,
+		loadbalancerservice.Setup,
+		loadbalancertarget.Setup,
+		networkattachment.Setup,
 		certificate.Setup,
 		firewall.Setup,
 		managedcertificate.Setup,
@@ -47,14 +48,15 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		subnet.Setup,
 		providerconfig.Setup,
 		firewallattachment.Setup,
-		group.Setup,
-		ip.Setup,
-		ipassignment.Setup,
-		key.Setup,
-		networkserver.Setup,
+		floatingip.Setup,
+		floatingipassignment.Setup,
+		networkattachmentserver.Setup,
+		placementgroup.Setup,
 		server.Setup,
 		snapshot.Setup,
+		sshkey.Setup,
 		volume.Setup,
+		volumeattachment.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err
@@ -67,10 +69,10 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 // the supplied manager gated.
 func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		balancer.SetupGated,
-		balancernetwork.SetupGated,
-		balancerservice.SetupGated,
-		balancertarget.SetupGated,
+		loadbalancer.SetupGated,
+		loadbalancerservice.SetupGated,
+		loadbalancertarget.SetupGated,
+		networkattachment.SetupGated,
 		certificate.SetupGated,
 		firewall.SetupGated,
 		managedcertificate.SetupGated,
@@ -79,14 +81,15 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 		subnet.SetupGated,
 		providerconfig.SetupGated,
 		firewallattachment.SetupGated,
-		group.SetupGated,
-		ip.SetupGated,
-		ipassignment.SetupGated,
-		key.SetupGated,
-		networkserver.SetupGated,
+		floatingip.SetupGated,
+		floatingipassignment.SetupGated,
+		networkattachmentserver.SetupGated,
+		placementgroup.SetupGated,
 		server.SetupGated,
 		snapshot.SetupGated,
+		sshkey.SetupGated,
 		volume.SetupGated,
+		volumeattachment.SetupGated,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err

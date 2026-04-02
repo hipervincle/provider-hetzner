@@ -1,0 +1,54 @@
+apiVersion: loadbalancer.hetzner.m.crossplane.io/v1alpha1
+kind: LoadBalancerService
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/loadbalancerservice
+  labels:
+    testing.upbound.io/example-name: https-service
+  name: https-service
+  namespace: crossplane-system
+spec:
+  forProvider:
+    destinationPort: 443
+    http:
+    - certificatesRefs:
+      - name: ingress-cert
+      stickySessions: true
+    listenPort: 443
+    loadBalancerIdRef:
+      name: main
+    protocol: https
+
+---
+
+apiVersion: loadbalancer.hetzner.m.crossplane.io/v1alpha1
+kind: LoadBalancer
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/loadbalancerservice
+  labels:
+    testing.upbound.io/example-name: main
+  name: main
+  namespace: crossplane-system
+spec:
+  forProvider:
+    loadBalancerType: lb11
+    location: nbg1
+    name: main
+
+---
+
+apiVersion: network.hetzner.m.crossplane.io/v1alpha1
+kind: ManagedCertificate
+metadata:
+  annotations:
+    meta.upbound.io/example-id: loadbalancer/v1alpha1/loadbalancerservice
+  labels:
+    testing.upbound.io/example-name: ingress-cert
+  name: ingress-cert
+  namespace: crossplane-system
+spec:
+  forProvider:
+    domainNames:
+    - example.com
+    name: ingress-cert

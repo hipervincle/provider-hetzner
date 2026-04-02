@@ -8,8 +8,8 @@ package v1alpha1
 
 import resource "github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 
-// GetItems of this BalancerList.
-func (l *BalancerList) GetItems() []resource.Managed {
+// GetItems of this LoadBalancerList.
+func (l *LoadBalancerList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -17,8 +17,8 @@ func (l *BalancerList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this BalancerNetworkList.
-func (l *BalancerNetworkList) GetItems() []resource.Managed {
+// GetItems of this LoadBalancerServiceList.
+func (l *LoadBalancerServiceList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -26,8 +26,8 @@ func (l *BalancerNetworkList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this BalancerServiceList.
-func (l *BalancerServiceList) GetItems() []resource.Managed {
+// GetItems of this LoadBalancerTargetList.
+func (l *LoadBalancerTargetList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -35,8 +35,8 @@ func (l *BalancerServiceList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this BalancerTargetList.
-func (l *BalancerTargetList) GetItems() []resource.Managed {
+// GetItems of this NetworkAttachmentList.
+func (l *NetworkAttachmentList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]

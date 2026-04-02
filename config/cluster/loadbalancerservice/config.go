@@ -7,9 +7,16 @@ import (
 // Configure adds configurations for load balancer service cluster.
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("hcloud_load_balancer_service", func(r *config.Resource) {
+		r.Kind = "LoadBalancerService"
 		r.ShortGroup = "loadbalancer"
 		r.References["load_balancer_id"] = config.Reference{
 			TerraformName: "hcloud_load_balancer",
+		}
+		r.References["http.certificates"] = config.Reference{
+			TerraformName: "hcloud_managed_certificate",
+		}
+		r.References["http.*.certificates"] = config.Reference{
+			TerraformName: "hcloud_managed_certificate",
 		}
 	})
 }

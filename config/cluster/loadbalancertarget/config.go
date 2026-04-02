@@ -7,6 +7,7 @@ import (
 // Configure adds configurations for load balancer target cluster.
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("hcloud_load_balancer_target", func(r *config.Resource) {
+		r.Kind = "LoadBalancerTarget"
 		r.ShortGroup = "loadbalancer"
 		r.References["load_balancer_id"] = config.Reference{
 			TerraformName: "hcloud_load_balancer",

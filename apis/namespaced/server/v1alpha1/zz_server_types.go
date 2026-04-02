@@ -24,7 +24,16 @@ type NetworkInitParameters struct {
 	IP *string `json:"ip,omitempty" tf:"ip,omitempty"`
 
 	// ID of the network
+	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/network/v1alpha1.Network
 	NetworkID *float64 `json:"networkId,omitempty" tf:"network_id,omitempty"`
+
+	// Reference to a Network in network to populate networkId.
+	// +kubebuilder:validation:Optional
+	NetworkIDRef *v1.NamespacedReference `json:"networkIdRef,omitempty" tf:"-"`
+
+	// Selector for a Network in network to populate networkId.
+	// +kubebuilder:validation:Optional
+	NetworkIDSelector *v1.NamespacedSelector `json:"networkIdSelector,omitempty" tf:"-"`
 }
 
 type NetworkObservation struct {
@@ -55,8 +64,17 @@ type NetworkParameters struct {
 	IP *string `json:"ip,omitempty" tf:"ip,omitempty"`
 
 	// ID of the network
+	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/network/v1alpha1.Network
 	// +kubebuilder:validation:Optional
-	NetworkID *float64 `json:"networkId" tf:"network_id,omitempty"`
+	NetworkID *float64 `json:"networkId,omitempty" tf:"network_id,omitempty"`
+
+	// Reference to a Network in network to populate networkId.
+	// +kubebuilder:validation:Optional
+	NetworkIDRef *v1.NamespacedReference `json:"networkIdRef,omitempty" tf:"-"`
+
+	// Selector for a Network in network to populate networkId.
+	// +kubebuilder:validation:Optional
+	NetworkIDSelector *v1.NamespacedSelector `json:"networkIdSelector,omitempty" tf:"-"`
 }
 
 type PublicNetInitParameters struct {
@@ -151,14 +169,14 @@ type ServerInitParameters struct {
 	Network []NetworkInitParameters `json:"network,omitempty" tf:"network,omitempty"`
 
 	// Placement Group ID the server added to on creation.
-	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/server/v1alpha1.Group
+	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/server/v1alpha1.PlacementGroup
 	PlacementGroupID *float64 `json:"placementGroupId,omitempty" tf:"placement_group_id,omitempty"`
 
-	// Reference to a Group in server to populate placementGroupId.
+	// Reference to a PlacementGroup in server to populate placementGroupId.
 	// +kubebuilder:validation:Optional
 	PlacementGroupIDRef *v1.NamespacedReference `json:"placementGroupIdRef,omitempty" tf:"-"`
 
-	// Selector for a Group in server to populate placementGroupId.
+	// Selector for a PlacementGroup in server to populate placementGroupId.
 	// +kubebuilder:validation:Optional
 	PlacementGroupIDSelector *v1.NamespacedSelector `json:"placementGroupIdSelector,omitempty" tf:"-"`
 
@@ -173,14 +191,14 @@ type ServerInitParameters struct {
 	Rescue *string `json:"rescue,omitempty" tf:"rescue,omitempty"`
 
 	// SSH key IDs or names which should be injected into the server at creation time. Once the server is created, you can not update the list of SSH Keys. If you do change this, you will be prompted to destroy and recreate the server. You can avoid this by setting lifecycle.ignore_changes to [ ssh_keys ].
-	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/server/v1alpha1.Key
+	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/server/v1alpha1.SSHKey
 	SSHKeys []*string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 
-	// References to Key in server to populate sshKeys.
+	// References to SSHKey in server to populate sshKeys.
 	// +kubebuilder:validation:Optional
 	SSHKeysRefs []v1.NamespacedReference `json:"sshKeysRefs,omitempty" tf:"-"`
 
-	// Selector for a list of Key in server to populate sshKeys.
+	// Selector for a list of SSHKey in server to populate sshKeys.
 	// +kubebuilder:validation:Optional
 	SSHKeysSelector *v1.NamespacedSelector `json:"sshKeysSelector,omitempty" tf:"-"`
 
@@ -358,15 +376,15 @@ type ServerParameters struct {
 	Network []NetworkParameters `json:"network,omitempty" tf:"network,omitempty"`
 
 	// Placement Group ID the server added to on creation.
-	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/server/v1alpha1.Group
+	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/server/v1alpha1.PlacementGroup
 	// +kubebuilder:validation:Optional
 	PlacementGroupID *float64 `json:"placementGroupId,omitempty" tf:"placement_group_id,omitempty"`
 
-	// Reference to a Group in server to populate placementGroupId.
+	// Reference to a PlacementGroup in server to populate placementGroupId.
 	// +kubebuilder:validation:Optional
 	PlacementGroupIDRef *v1.NamespacedReference `json:"placementGroupIdRef,omitempty" tf:"-"`
 
-	// Selector for a Group in server to populate placementGroupId.
+	// Selector for a PlacementGroup in server to populate placementGroupId.
 	// +kubebuilder:validation:Optional
 	PlacementGroupIDSelector *v1.NamespacedSelector `json:"placementGroupIdSelector,omitempty" tf:"-"`
 
@@ -384,15 +402,15 @@ type ServerParameters struct {
 	Rescue *string `json:"rescue,omitempty" tf:"rescue,omitempty"`
 
 	// SSH key IDs or names which should be injected into the server at creation time. Once the server is created, you can not update the list of SSH Keys. If you do change this, you will be prompted to destroy and recreate the server. You can avoid this by setting lifecycle.ignore_changes to [ ssh_keys ].
-	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/server/v1alpha1.Key
+	// +crossplane:generate:reference:type=github.com/miaits/provider-hetzner/apis/namespaced/server/v1alpha1.SSHKey
 	// +kubebuilder:validation:Optional
 	SSHKeys []*string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 
-	// References to Key in server to populate sshKeys.
+	// References to SSHKey in server to populate sshKeys.
 	// +kubebuilder:validation:Optional
 	SSHKeysRefs []v1.NamespacedReference `json:"sshKeysRefs,omitempty" tf:"-"`
 
-	// Selector for a list of Key in server to populate sshKeys.
+	// Selector for a list of SSHKey in server to populate sshKeys.
 	// +kubebuilder:validation:Optional
 	SSHKeysSelector *v1.NamespacedSelector `json:"sshKeysSelector,omitempty" tf:"-"`
 

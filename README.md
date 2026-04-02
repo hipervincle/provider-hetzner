@@ -22,11 +22,12 @@ generation tools and exposes XRM-conformant managed resources for
 
 ## Getting Started
 
-The provider needs a Kubernetes secret with an API Token 
-for Hetzner Cloud. To create the secret, run:
+The provider needs a Kubernetes secret with an API token
+for Hetzner Cloud. Create it in `crossplane-system`:
 
 ```bash
 kubectl create secret generic hetzner   \
+-n crossplane-system                    \
 --from-literal=credentials='{"token":"<TOKEN>"}'   \
 --dry-run=client -o yaml | kubectl apply -f -
 ```
@@ -41,6 +42,24 @@ metadata:
   name: provider-hetzner
 spec:
   package: ghcr.io/miaits/provider-hetzner:v1.0.0-alpha.1
+```
+
+After installing the provider, create a provider configuration before
+applying managed resources:
+
+
+```yaml
+apiVersion: hetzner.m.crossplane.io/v1beta1
+kind: ClusterProviderConfig
+metadata:
+  name: default
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      name: hetzner
+      namespace: crossplane-system
+      key: credentials
 ```
 
 To create a Hetzner server for test, apply:
@@ -65,6 +84,25 @@ To delete the test server, run:
 kubectl delete servers.server.hetzner.m node1
 ```
 
+Reference-first namespaced examples are available at:
+
+- `examples/namespaced/server/v1alpha1/simple-server.yaml`
+- `examples/namespaced/server/v1alpha1/networkattachment.yaml`
+- `examples/namespaced/server/v1alpha1/firewallattachment.yaml`
+- `examples/namespaced/loadbalancer/v1alpha1/networkattachment.yaml`
+- `examples/namespaced/loadbalancer/v1alpha1/loadbalancerservice.yaml`
+- `examples/web-stack/web-stack-foundation.yaml`
+- `examples/web-stack/web-stack.yaml`
+
+The private-backend web stack is split into two phases:
+
+1. `kubectl apply -f examples/web-stack/web-stack-foundation.yaml`
+2. Wait for the subnet, gateway, routes, and load balancer to become ready.
+3. `kubectl apply -f examples/web-stack/web-stack.yaml`
+
+The main renamed kinds in `v1alpha1` are `LoadBalancer`, `NetworkAttachment`,
+`PlacementGroup`, `SSHKey`, `FloatingIP`, and `FloatingIPAssignment`.
+
 ## Contributing
 
 For the general contribution guide,
@@ -72,7 +110,13 @@ see [Upjet Contribution Guide](https://github.com/crossplane/upjet/blob/main/CON
 
 If you'd like to learn how to use Upjet, see [Usage Guide](https://github.com/crossplane/upjet/tree/main/docs).
 
-To build this provider locally and run it in a local Kubernetes cluster, run `make run`
+To build this provider locally and run it in a local Kubernetes cluster, run
+`make run`.
+
+The local `make run` target binds metrics and webhook listeners to ephemeral
+ports by default to avoid conflicts with other local processes. You can
+override them when needed, for example:
+`make run LOCAL_METRICS_BIND_ADDRESS=127.0.0.1:8081 LOCAL_WEBHOOK_PORT=9444`
 
 ### Add a New Resource
 
