@@ -214,3 +214,20 @@ func TestVolumeExternalName(t *testing.T) {
 		}
 	})
 }
+
+func TestZoneRRSetExternalName(t *testing.T) {
+	t.Parallel()
+
+	en := ExternalNameConfigs["hcloud_zone_rrset"]
+	got, err := en.GetIDFn(context.Background(), "", map[string]any{
+		"zone": "example.com",
+		"name": "www",
+		"type": "A",
+	}, nil)
+	if err != nil {
+		t.Fatalf("GetIDFn() unexpected error: %v", err)
+	}
+	if got != "example.com/www/A" {
+		t.Fatalf("GetIDFn() = %q, want %q", got, "example.com/www/A")
+	}
+}

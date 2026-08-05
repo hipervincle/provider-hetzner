@@ -34,6 +34,8 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"hcloud_snapshot":               config.IdentifierFromProvider,
 	"hcloud_volume":                 volumeExternalName(),
 	"hcloud_volume_attachment":      config.IdentifierFromProvider,
+	"hcloud_zone":                   config.IdentifierFromProvider,
+	"hcloud_zone_rrset":             config.TemplatedStringAsIdentifier("", "{{ .parameters.zone }}/{{ .parameters.name }}/{{ .parameters.type }}"),
 }
 
 func idWithStub() config.ExternalName {

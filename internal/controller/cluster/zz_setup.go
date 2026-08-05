@@ -9,6 +9,8 @@ import (
 
 	"github.com/crossplane/upjet/v2/pkg/controller"
 
+	zone "github.com/miaits/provider-hetzner/internal/controller/cluster/dns/zone"
+	zonerrset "github.com/miaits/provider-hetzner/internal/controller/cluster/dns/zonerrset"
 	loadbalancer "github.com/miaits/provider-hetzner/internal/controller/cluster/loadbalancer/loadbalancer"
 	loadbalancerservice "github.com/miaits/provider-hetzner/internal/controller/cluster/loadbalancer/loadbalancerservice"
 	loadbalancertarget "github.com/miaits/provider-hetzner/internal/controller/cluster/loadbalancer/loadbalancertarget"
@@ -36,6 +38,8 @@ import (
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
+		zone.Setup,
+		zonerrset.Setup,
 		loadbalancer.Setup,
 		loadbalancerservice.Setup,
 		loadbalancertarget.Setup,
@@ -69,6 +73,8 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 // the supplied manager gated.
 func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
+		zone.SetupGated,
+		zonerrset.SetupGated,
 		loadbalancer.SetupGated,
 		loadbalancerservice.SetupGated,
 		loadbalancertarget.SetupGated,

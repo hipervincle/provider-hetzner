@@ -26,6 +26,8 @@ import (
 	uploadedCertificateCluster "github.com/miaits/provider-hetzner/config/cluster/uploadedcertificate"
 	volumeCluster "github.com/miaits/provider-hetzner/config/cluster/volume"
 	volumeAttachmentCluster "github.com/miaits/provider-hetzner/config/cluster/volumeattachment"
+	zoneCluster "github.com/miaits/provider-hetzner/config/cluster/zone"
+	zoneRRSetCluster "github.com/miaits/provider-hetzner/config/cluster/zonerrset"
 	firewallNamespaced "github.com/miaits/provider-hetzner/config/namespaced/firewall"
 	firewallAttachmentNamespaced "github.com/miaits/provider-hetzner/config/namespaced/firewallattachment"
 	floatingIPNamespaced "github.com/miaits/provider-hetzner/config/namespaced/floatingip"
@@ -46,6 +48,8 @@ import (
 	uploadedCertificateNamespaced "github.com/miaits/provider-hetzner/config/namespaced/uploadedcertificate"
 	volumeNamespaced "github.com/miaits/provider-hetzner/config/namespaced/volume"
 	volumeAttachmentNamespaced "github.com/miaits/provider-hetzner/config/namespaced/volumeattachment"
+	zoneNamespaced "github.com/miaits/provider-hetzner/config/namespaced/zone"
+	zoneRRSetNamespaced "github.com/miaits/provider-hetzner/config/namespaced/zonerrset"
 )
 
 const (
@@ -91,6 +95,8 @@ func GetProvider() *ujconfig.Provider {
 		sshKeyCluster.Configure,
 		volumeCluster.Configure,
 		volumeAttachmentCluster.Configure,
+		zoneCluster.Configure,
+		zoneRRSetCluster.Configure,
 	} {
 		configure(pc)
 	}
@@ -134,6 +140,8 @@ func GetProviderNamespaced() *ujconfig.Provider {
 		sshKeyNamespaced.Configure,
 		volumeNamespaced.Configure,
 		volumeAttachmentNamespaced.Configure,
+		zoneNamespaced.Configure,
+		zoneRRSetNamespaced.Configure,
 	} {
 		configure(pc)
 	}

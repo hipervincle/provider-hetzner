@@ -1,0 +1,57 @@
+apiVersion: dns.hetzner.m.crossplane.io/v1alpha1
+kind: Zone
+metadata:
+  name: example-com
+  namespace: crossplane-system
+spec:
+  forProvider:
+    mode: primary
+    name: example.com
+    ttl: 3600
+---
+apiVersion: dns.hetzner.m.crossplane.io/v1alpha1
+kind: ZoneRRSet
+metadata:
+  name: example-com-www
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: www
+    records:
+      - value: 192.0.2.10
+        comment: Web server
+    ttl: 300
+    type: A
+    zoneRef:
+      name: example-com
+---
+apiVersion: dns.hetzner.m.crossplane.io/v1alpha1
+kind: ZoneRRSet
+metadata:
+  name: example-com-mail
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: "@"
+    records:
+      - value: 10 mail.example.com.
+    ttl: 3600
+    type: MX
+    zoneRef:
+      name: example-com
+---
+apiVersion: dns.hetzner.m.crossplane.io/v1alpha1
+kind: ZoneRRSet
+metadata:
+  name: example-com-spf
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: "@"
+    records:
+      # Hetzner requires each TXT chunk to be quoted and at most 255 characters.
+      - value: '"v=spf1 -all"'
+    ttl: 3600
+    type: TXT
+    zoneRef:
+      name: example-com

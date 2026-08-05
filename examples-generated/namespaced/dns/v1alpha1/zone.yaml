@@ -1,0 +1,17 @@
+apiVersion: dns.hetzner.m.crossplane.io/v1alpha1
+kind: Zone
+metadata:
+  annotations:
+    meta.upbound.io/example-id: dns/v1alpha1/zone
+  labels:
+    testing.upbound.io/example-name: example_primary
+  name: example-primary
+  namespace: crossplane-system
+spec:
+  forProvider:
+    deleteProtection: false
+    labels:
+      key: value
+    mode: primary
+    name: example.com
+    ttl: 10800

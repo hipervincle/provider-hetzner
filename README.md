@@ -93,6 +93,11 @@ Reference-first namespaced examples are available at:
 - `examples/namespaced/loadbalancer/v1alpha1/loadbalancerservice.yaml`
 - `examples/web-stack/web-stack-foundation.yaml`
 - `examples/web-stack/web-stack.yaml`
+- `examples/namespaced/dns/zone-and-records.yaml`
+
+DNS zone and RRSet implementation details, generation flow, runtime reconciliation,
+usage, and import guidance are documented in
+[`docs/adding-dns-zone-management.md`](docs/adding-dns-zone-management.md).
 
 The private-backend web stack is split into two phases:
 

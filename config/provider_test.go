@@ -32,6 +32,8 @@ var expectedResources = map[string]expectedResource{
 	"hcloud_uploaded_certificate":   {shortGroup: "network"},
 	"hcloud_volume":                 {shortGroup: "server"},
 	"hcloud_volume_attachment":      {shortGroup: "server", kind: "VolumeAttachment"},
+	"hcloud_zone":                   {shortGroup: "dns"},
+	"hcloud_zone_rrset":             {shortGroup: "dns", kind: "ZoneRRSet"},
 }
 
 func TestProviderConfigurationConsistency(t *testing.T) {
@@ -77,6 +79,7 @@ func assertProviderConsistency(t *testing.T, pc *ujconfig.Provider) {
 	assertReference(t, pc.Resources["hcloud_load_balancer_service"], "http.*.certificates", "hcloud_managed_certificate")
 	assertReference(t, pc.Resources["hcloud_volume_attachment"], "server_id", "hcloud_server")
 	assertReference(t, pc.Resources["hcloud_volume_attachment"], "volume_id", "hcloud_volume")
+	assertReference(t, pc.Resources["hcloud_zone_rrset"], "zone", "hcloud_zone")
 	assertIgnoredLateInitField(t, pc.Resources["hcloud_server"], "datacenter")
 }
 
