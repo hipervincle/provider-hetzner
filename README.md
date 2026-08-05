@@ -41,7 +41,7 @@ kind: Provider
 metadata:
   name: provider-hetzner
 spec:
-  package: ghcr.io/miaits/provider-hetzner:v1.0.0-alpha.1
+  package: ghcr.io/hipervincle/provider-hetzner:v0.2.1
 ```
 
 After installing the provider, create a provider configuration before

@@ -3,8 +3,8 @@ kind: Provider
 metadata:
   name: provider-hetzner
   annotations:
-    meta.crossplane.io/maintainer: Mihai Lemnaru <mihai.lmnr@proton.me>
-    meta.crossplane.io/source: github.com/miaits/provider-hetzner
+    meta.crossplane.io/maintainer: Hipervincle <jbarber@hipervincle.com>
+    meta.crossplane.io/source: github.com/hipervincle/provider-hetzner
     meta.crossplane.io/license: Apache-2.0 
     meta.crossplane.io/description: |
       Crossplane provider for Hetzner Cloud
@@ -13,7 +13,7 @@ metadata:
       [Hetzner Cloud](https://hetzner.com/cloud). 
 
       It is based on the Terraform Hetzner provider. Read the 
-      [readme](https://github.com/miaits/provider-hetzner/blob/main/README.md)
+      [readme](https://github.com/hipervincle/provider-hetzner/blob/main/README.md)
       for instructions.      
 spec:
   capabilities:
